@@ -15,6 +15,21 @@
             "username": "root",
             "password": "Nov.13-01@",
             "connectionTimeout": 30
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "EHR_New_York",
+            "database": "ehr_new_york_discharges",
+            "username": "root",
+            "connectionTimeout": 30
         }
     ]
 }
