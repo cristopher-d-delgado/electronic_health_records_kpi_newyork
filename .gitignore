@@ -1,0 +1,2 @@
+# Ignore data folder as the data in the CSV is too large to be store in git
+data/
