@@ -1,7 +1,7 @@
 -- ----------------------------------------------------------
 -- 1. Create clean analytical view with numeric conversions. Create our analysis Table
 -- ----------------------------------------------------------
-CREATE OR REPLACE VIEW discharges AS
+CREATE TABLE discharges AS
 SELECT
     `Hospital Service Area`				   AS hospital_service_area,
     `Hospital County`                      AS hospital_county,
@@ -25,11 +25,11 @@ FROM discharges_raw;
 -- 2. Create Base Key Performance Indicators ----------------
 -- ----------------------------------------------------------
 -- Help answer overall New York performance of hospitals
-CREATE OR REPLACE VIEW kpi_overview_year AS 
+CREATE TABLE kpi_overview_yearkpi_overview_year AS 
 SELECT 
 	discharge_year,
     COUNT(*) 							       AS total_discharges, -- Count of Amount of Discharges
-	ROUND(AVG(length_of_stay), 2)			   AS avg_length_of_stay,
+	ROUND(AVG(length_of_stay), 0)			   AS avg_length_of_stay,
     ROUND(AVG(total_charges), 2)			   AS avg_total_charges,
     ROUND(AVG(total_costs), 2)				   AS avg_total_costs,
 	ROUND(AVG(total_charges/NULLIF(length_of_stay,0)), 2) AS avg_charge_per_day
@@ -39,3 +39,36 @@ GROUP BY discharge_year;
 -- --------------------------------------------------------
 -- 3. Hospital Performance & Utilization ------------------
 -- --------------------------------------------------------
+-- Discharges & LOS by hospital and year
+CREATE TABLE kpi_hospital_performance_and_utilization AS 
+SELECT 
+	facility_name                           AS facility_name, 
+    hospital_county                         AS hospital_county,
+    discharge_year                          AS discharge_year,
+    COUNT(*)							    AS total_discharges, -- total discharges per hospital per year
+	ROUND(AVG(length_of_stay), 0) 			AS avg_length_of_stay -- avg length of stay per hospital per year
+FROM discharges 
+GROUP BY facility_name, hospital_county, discharge_year;
+
+-- Utilization by clinical group (APR MDC)
+
+-- --------------------------------------------------------
+-- 4. Cost & Charges Analysis -----------------------------
+-- --------------------------------------------------------
+-- Average total charges (by Diagnosis, Payer, and Hospital)
+
+-- Top 10 Costliest Diagnoses
+
+-- Average Cost per Day 
+
+-- Correlation between Avg LOS and Total Charges
+
+-- -------------------------------------------------------
+-- 5. Patient Demographics & Health Trends
+-- -------------------------------------------------------
+-- Discharges by Age Group and Gender 
+
+-- Top Diagnoses by Age Group and Gender 
+
+-- Discharges by County
+
