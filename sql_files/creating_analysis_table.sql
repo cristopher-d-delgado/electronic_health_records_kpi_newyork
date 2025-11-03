@@ -25,7 +25,7 @@ FROM discharges_raw;
 -- 2. Create Base Key Performance Indicators ----------------
 -- ----------------------------------------------------------
 -- Help answer overall New York performance of hospitals
-CREATE TABLE kpi_overview_yearkpi_overview_year AS 
+CREATE TABLE kpi_overview_new_york AS 
 SELECT 
 	discharge_year,
     COUNT(*) 							       AS total_discharges, -- Count of Amount of Discharges
@@ -51,6 +51,38 @@ FROM discharges
 GROUP BY facility_name, hospital_county, discharge_year;
 
 -- Utilization by clinical group (APR MDC)
+-- Create CTE called counts which helps CTE ranked determine most prevelant diagnoses in each hospital
+WITH counts AS (
+	SELECT 
+		facility_name, 
+        hospital_county, 
+        apr_mdc_description AS apr_mdc, 
+        COUNT(*) AS total_discharges
+	FROM discharges
+    GROUP BY facility_name, hospital_county, apr_mdc_description
+),
+-- Create CTE ranked which helps identify the top diagnoses from each hospital which can be queried later on
+ranked AS (
+	SELECT 
+		counts.*,
+	-- Window function assigning sequential number to each hospital
+	ROW_NUMBER() OVER (
+		PARTITION BY facility_name -- Creates window per hospital
+        ORDER BY total_discharges DESC, apr_mdc ASC -- Assign total discharges as descending to see top diagnoses 
+	)
+    AS rn 
+    FROM counts
+)
+-- Create query to obtain top 3 diagnoses from each hospital in New York 
+SELECT 
+	facility_name, 
+    hospital_county, 
+    apr_mdc, 
+    total_discharges,
+    rn
+FROM ranked
+WHERE rn <= 3 -- Top 3 diagnoses 
+ORDER BY facility_name, rn;
 
 -- --------------------------------------------------------
 -- 4. Cost & Charges Analysis -----------------------------
